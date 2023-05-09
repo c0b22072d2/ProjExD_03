@@ -143,7 +143,23 @@ class Beam:
         self._rct.move_ip(self._vx, self._vy)
         screen.blit(self._img, self._rct)
 
+class Explosion:
+    def __init__(self,life):
+        self.exp_img = pg.image.load("fig/explosion.gif")
+        self.exp_img_frip = pg.transform.flip(self.exp_img)
+        self.exp_lst=[self.exp_img, self.exp_img_frip]
+        self.place_exp = Bomb._rct.center
+        self.life = life
+        self.time = 0
 
+    def update(self,dt):
+        self.time += dt
+        if self.time>= self.life:
+            self.kill()
+        else:
+            self.image_index = int(self.time / (self.life / len(self.image_list)))
+            self.image = self.image_list[self.image_index]
+            self.rect = self.image.get_rect(center=self.rect.center)
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -164,8 +180,9 @@ def main():
 
         tmr += 1
         screen.blit(bg_img, [0, 0])
-        
-        
+
+
+
         for bomb in bombs:
             bomb.update(screen)
             if bird._rct.colliderect(bomb._rct):
@@ -174,7 +191,7 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
-            
+
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
 
@@ -186,7 +203,6 @@ def main():
                     del bombs[i]
                     bird.change_img(6, screen)
                     break
-
         pg.display.update()
         clock.tick(1000)
 
